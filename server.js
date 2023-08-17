@@ -17,8 +17,19 @@ mongoose.connection.once('open', ()=> {
 // middleware
 app.use(express.json({ extended: false }));
 
-app.get('/',(req,res)=>{
-   res.send("Hello ✅ ")
+// app.get('/',(req,res)=>{
+//    res.send("Hello ✅ ")
+// })
+// index route
+app.get('/', async(req,res)=>{
+    try{
+       const allPosts = await Post.find({})  
+      res.send(allPosts)
+    }catch (err){
+        console.error(err)
+        res.status(500).send("Server Error")
+      }
+   
 })
 
 // Create route CRUD
