@@ -2,24 +2,25 @@ const express = require('express')
 const app = express()
 const PORT = 3000
 const mongoose = require('mongoose')
-require('dotenv').config()
 const Post = require('./models/post')
+require("dotenv").config()
 
 // Db connection
-mongoose.connect(process.env.MONGO_URI,{
+mongoose.connect(process.env.MONGO_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
-})
-mongoose.connection.once('open', ()=> {
+    // useCreateIndex: true
+  });
+mongoose.connection.once("open", ()=> {
     console.log("i'm going in");
 });
 
 // middleware
 app.use(express.json({ extended: false }));
 
-// app.get('/',(req,res)=>{
-//    res.send("Hello ✅ ")
-// })
+app.get('/',(req,res)=>{
+   res.send("Hello ✅ ")
+})
 // index route
 app.get('/', async(req,res)=>{
     try{
@@ -41,7 +42,27 @@ app.post('/', async (req,res)=>{
       console.error(err)
     }
     
+})
+// delete
+app.delete('/', async(req,res)=>{
+    try{
+      await Post.findByIdAndDelete(req.params.id)
+  res.send('Deleted Post')  
+    }catch (err){
+        console.error(err)
+        res.status(500).send("Server Error")
+      }
   
+})
+// update
+app.put('/:id',async(req,res)=>{
+    try{
+     const post = await Post.findByIdAndUpdate(req.params.id,req.body,{new: true})
+     res.send(post)
+    }catch (err){
+      console.error(err)
+      res.status(500).send("Server Error")
+    }
 })
 
 
